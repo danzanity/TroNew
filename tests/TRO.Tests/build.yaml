@@ -1,0 +1,30 @@
+parameters:
+- name: buildConfig
+  type: string
+  default: 'QA'
+  values:
+  - 'QA'
+  - 'UAT'
+  - 'Prod'
+- name: filter
+  type: string
+
+steps:
+- task: NuGetAuthenticate@0
+
+- task: ApplitoolsBuildTask@0
+
+- task: DotNetCoreCLI@2
+  displayName: 'Test'
+  inputs:
+    command: 'test'
+    projects: 'tests/TRO.Tests/TRO.Tests.csproj'
+    arguments: '-c ${{parameters.buildConfig}} -v normal --filter ${{parameters.filter}}'
+  env:
+    APPLITOOLS_API_KEY: $(APPLITOOLS_API_KEY)
+    'personaOptions:andieUser': $(personaOptions:andieUser)
+    'personaOptions:andiePswd': $(personaOptions:andiePswd)
+    'personaOptions:ginaUser': $(personaOptions:ginaUser)
+    'personaOptions:ginaPswd': $(personaOptions:ginaPswd)
+    'personaOptions:connieUser': $(personaOptions:connieUser)
+    'personaOptions:conniePswd': $(personaOptions:conniePswd)

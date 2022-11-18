@@ -1,0 +1,24 @@
+name: $(Date:yyyyMMdd)$(Rev:.r)
+
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - tests/TRO.Tests
+    exclude:
+    - tests/TRO.Tests/README.md
+    - tests/TRO.Tests/release.yaml
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+- group: tro-secrets
+
+extends:
+  template: build.yaml
+  parameters:
+    buildConfig: QA
+    filter: 'Category=smoke'

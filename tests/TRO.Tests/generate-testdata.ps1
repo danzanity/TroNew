@@ -1,0 +1,1 @@
+#tro-data --source testdata.yaml --output-dir .

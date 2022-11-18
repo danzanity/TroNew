@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <UserSecretsId>f86e1b81-dae7-4210-a0d6-a7498ac3e5df</UserSecretsId>
+  </PropertyGroup>
+
+  <Target Name="CreateEnv" BeforeTargets="PreBuildEvent" Condition="!Exists('$(ProjectDir)\.env')">
+    <Message Text="Creating $(ProjectDir).env" Importance="high" />
+    <Exec Command="echo # override your configuration variables> .env" />
+  </Target>
+
+  <Target Name="CreateRuntimeConfig" BeforeTargets="PreBuildEvent">
+    <Message Text="Deleting $(OutDir)\$(ProjectName).runtimeconfig.json" Importance="high" />
+    <Delete Files="$(OutDir)\$(ProjectName).runtimeconfig.json" />
+  </Target>
+
+  <PropertyGroup>
+    <Configurations>QA;UAT;Prod;Release;Debug;QA Debug;UAT Debug;Prod Debug</Configurations>
+  </PropertyGroup>
+
+  <Choose>
+    <When Condition="$(Configuration.EndsWith('Debug'))">
+      <PropertyGroup>
+        <DebugSymbols>true</DebugSymbols>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <OutputPath>bin\Debug\</OutputPath>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <DefineConstants>TRACE</DefineConstants>
+        <OutputPath>bin\Release\</OutputPath>
+        <Optimize>true</Optimize>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
+  <ItemGroup>
+    <RuntimeHostConfigurationOption Include="configName" Value="$(Configuration)" />
+    <RuntimeHostConfigurationOption Include="env" Value="$(Configuration.Replace(' Debug', '').Trim().ToLower())" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Auto.Core.Plus.UI" Version="20220824.1.0-alpha" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core.Dto\Core.Dto.csproj" />
+    <ProjectReference Include="..\PageObjectGenerator\PageObjectSourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update=".env;appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>appsettings.json</DependentUpon>
+    </None>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,39 @@
+name: $(Date:yyyyMMdd)$(Rev:.r)
+
+parameters:
+- name: BuildConfiguration
+  type: string
+  default: 'Release'
+  values:
+  - 'Debug'
+  - 'Release'
+
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - src/ClientSourceGenerator
+    - tests/ClientSourceGenerator.Tests
+    exclude:
+    - src/ClientSourceGenerator/README.md
+    - src/ClientSourceGenerator/CHANGELOG.md
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'Build generator'
+  inputs:
+    command: 'build'
+    projects: 'src/ClientSourceGenerator/ClientSourceGenerator.csproj'
+    arguments: '-c ${{parameters.BuildConfiguration}}'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Test generator'
+  inputs:
+    command: 'test'
+    projects: 'tests/ClientSourceGenerator.Tests/ClientSourceGenerator.Tests.csproj'
+    arguments: '-c ${{parameters.BuildConfiguration}} -v normal'

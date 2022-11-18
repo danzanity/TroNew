@@ -1,0 +1,92 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+	<UserSecretsId>f86e1b81-dae7-4210-a0d6-a7498ac3e5df</UserSecretsId>
+  </PropertyGroup>
+
+  <Target Name="CreateEnv" BeforeTargets="PreBuildEvent" Condition="!Exists('$(ProjectDir)\.env')">
+    <Message Text="Creating $(ProjectDir).env" Importance="high" />
+    <Exec Command="echo # override your configuration variables> .env" />
+    <Exec Command="echo webDriverOptions__chromeOptions__arguments__--headless=true>> .env" />
+    <Exec Command="echo APPLITOOLS_API_KEY=>> .env" />
+    <Exec Command="echo APPLITOOLS_DISABLE=false>> .env" />
+	<Exec Command="echo #APPLITOOLS_BATCH_ID=>> .env" />
+  </Target>
+
+  <Target Name="CreateRuntimeConfig" BeforeTargets="PreBuildEvent">
+    <Message Text="Deleting $(OutDir)\$(ProjectName).runtimeconfig.json" Importance="high" />
+    <Delete Files="$(OutDir)\$(ProjectName).runtimeconfig.json" />
+  </Target>
+
+  <PropertyGroup>
+    <Configurations>QA;UAT;Prod;Release;Debug;QA Debug;UAT Debug;Prod Debug</Configurations>
+  </PropertyGroup>
+
+  <Choose>
+    <When Condition="$(Configuration.EndsWith('Debug'))">
+      <PropertyGroup>
+        <DebugSymbols>true</DebugSymbols>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <OutputPath>bin\Debug\</OutputPath>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <DefineConstants>TRACE</DefineConstants>
+        <OutputPath>bin\Release\</OutputPath>
+        <Optimize>true</Optimize>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
+  <ItemGroup>
+    <RuntimeHostConfigurationOption Include="configName" Value="$(Configuration)" />
+    <RuntimeHostConfigurationOption Include="env" Value="$(Configuration.Replace(' Debug', '').Trim().ToLower())" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Faker.Net" Version="2.0.154" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+    <PackageReference Include="Shouldly" Version="4.0.3" />
+    <PackageReference Include="SolidToken.SpecFlow.DependencyInjection" Version="3.9.3" />
+    <PackageReference Include="SpecFlow" Version="3.9.74" />
+    <PackageReference Include="SpecFlow.xUnit" Version="3.9.74" />
+    <PackageReference Include="xunit.analyzers" Version="0.10.0" />
+    <PackageReference Include="xunit.core" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Core.Dto\Core.Dto.csproj" />
+    <ProjectReference Include="..\..\src\TRO.Clients\TRO.Clients.csproj" />
+    <ProjectReference Include="..\..\src\TRO.PageObjects\TRO.PageObjects.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update=".env;appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>appsettings.json</DependentUpon>
+    </None>
+    <None Update="testdata.json;testdata.*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>testdata.yaml</DependentUpon>
+    </None>
+    <None Update="smoke.*.yaml;nonnego.*.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DependentUpon>build.yaml</DependentUpon>
+    </None>
+    <None Include=".assets/**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

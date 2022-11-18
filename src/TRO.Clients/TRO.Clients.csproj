@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <UserSecretsId>f86e1b81-dae7-4210-a0d6-a7498ac3e5df</UserSecretsId>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <!--<AdditionalFiles Include="core.oas.yaml" Namespace="TRO.Clients.Core" />-->
+    <AdditionalFiles Include="identification.oas.yaml" Namespace="TRO.Clients.Identification" />
+    <!--<AdditionalFiles Include="tro.oas.yaml" Namespace="TRO.Clients" />-->
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="RestSharp" Version="106.15.0" />
+    <PackageReference Include="Shouldly" Version="4.0.3" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\ClientSourceGenerator\ClientSourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\Core.Dto\Core.Dto.csproj" />
+  </ItemGroup>
+
+<!-- Manually reference the generator props because we locally reference the generator. When added via NuGet this happens automatically -->
+<Import Project="..\ClientSourceGenerator\ClientSourceGenerator.props" />
+
+</Project>

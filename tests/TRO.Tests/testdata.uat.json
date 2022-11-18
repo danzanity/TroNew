@@ -1,0 +1,10 @@
+{
+  "testDataOptions": {
+    "testData": {
+      "smokehouse": {
+        "projectName": "_Smokehouse",
+        "tenantId": 22
+      }
+    }
+  }
+}
